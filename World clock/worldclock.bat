@@ -1,0 +1,1 @@
+start /b pythonw "C:\Files\world clock.py"
