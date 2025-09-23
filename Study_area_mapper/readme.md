@@ -43,6 +43,6 @@ If you want to provide a specific color instead of using generic wording, such a
 
 4. <b>Chat with the agent and generate initial map: </b> The agent will ask specific question to the user about what to perform. Then, it generates an initial map. 
 
-5. <b>Modify the map:<b> Open the generate file `` The agent will be waiting for your further instruction about required modification from the initial image.
+5. <b>Modify the map:</b> Open the generate file `` The agent will be waiting for your further instruction about required modification from the initial image.
 
-6. <b> Finalize
+6. <b> Finalize:</b>: Finalize the 

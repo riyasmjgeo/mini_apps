@@ -35,6 +35,23 @@ with open('basemaps.json', 'r') as file:
 BASEMAP_KEYS = data['basemap_keys']
 POS_MAP = data['pos_map']
 
+# Map human-friendly loc strings to the integer codes expected by Anchored* artists
+_LOC_STR2INT = {
+    "upper right": 1,
+    "upper left": 2,
+    "lower left": 3,
+    "lower right": 4,
+    "right": 5,
+    "center left": 6,
+    "center right": 7,
+    "lower center": 8,
+    "upper center": 9,
+    "center": 10,
+}
+def _loc_to_int(loc_str: str) -> int:
+    return _LOC_STR2INT.get(loc_str, 1)  # default to "upper right"
+
+
 # ---------------- I/O helpers (with "-->") ----------------
 def ask_yes_no(prompt: str) -> bool:
     while True:
@@ -325,13 +342,17 @@ class StudyAreaMapper:
         seen = set()
         uniq = [(h, l) for h, l in zip(handles, labels) if l and not (l in seen or seen.add(l))]
         if uniq:
-            ax.legend([h for h,_ in uniq], [l for _,l in uniq], loc= "lower left", frameon=True)  # final placement below
-            # (legend position is controlled by legend_loc passed to make_map)
-            ax.get_legend().set_bbox_to_anchor(None)
-            plt.setp(ax.get_legend(), loc=legend_loc)
+            # Create the legend directly at the requested location
+            ax.legend(
+                [h for h, _ in uniq],
+                [l for _, l in uniq],
+                loc=legend_loc,
+                frameon=True
+            )
 
-        # north + scalebar
-        north = AnchoredText("N ↑", loc=north_loc, pad=0.3, prop=dict(size=10, weight='bold'), frameon=True)
+        # north + scalebar (convert string locs to int codes)
+        north = AnchoredText("N ↑", loc=_loc_to_int(north_loc), pad=0.3,
+                             prop=dict(size=10, weight='bold'), frameon=True)
         ax.add_artist(north)
         try:
             x0, x1 = ax.get_xlim()
@@ -340,7 +361,8 @@ class StudyAreaMapper:
             length = min(candidates, key=lambda c: abs(c - approx_len))
             bar = AnchoredSizeBar(ax.transData, length,
                                   f"{int(length)} m" if length < 1000 else f"{int(length/1000)} km",
-                                  loc=scalebar_loc, pad=0.4, borderpad=0.5, sep=4, frameon=True)
+                                  loc=_loc_to_int(scalebar_loc), pad=0.4,
+                                  borderpad=0.5, sep=4, frameon=True)
             ax.add_artist(bar)
         except Exception:
             pass
@@ -470,14 +492,6 @@ def main():
             else:
                 print("\nAvailable fields:")
                 field = choose_from_list("Choose field to categorize by", sorted(cols))
-                # try:
-                #     uniq_vals = sorted(map(str, gdf_tmp[field].dropna().unique().tolist()))
-                #     for val in uniq_vals[:50]:
-                #         print(f"  - {val}")
-                #     if len(uniq_vals) > 50:
-                #         print(f"  ... and {len(uniq_vals) - 50} more.")
-                # except Exception:
-                #     pass
                 legend = ask_nonempty("Legend title for this categorized layer (type 'None' to hide)")
                 legend = None if legend.lower() == "none" else legend
                 lbl_col = None
