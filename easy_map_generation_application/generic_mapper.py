@@ -551,7 +551,7 @@ def main():
 
     # Initial render
     mapper.make_map(
-        out_png="study area map.png",
+        out_png="generated_map.png",
         basemap_key=current_basemap,
         title=title,
         dpi=dpi,
