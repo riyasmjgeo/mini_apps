@@ -52,7 +52,7 @@ If you want to provide a specific color instead of using generic wording, such a
 ## Example
 Below is an example of the application using the data provided with this repo. The final map is what you are seeing on the top. 
 <details>
-<summary>Click to execution with sample data</summary>
+<summary>Click to see the terminal log generated during the creation of above image using the sample data provided</summary>
 
 ```command prompt
 
